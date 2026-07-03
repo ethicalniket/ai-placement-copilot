@@ -1,0 +1,49 @@
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+
+# React
+frontend/.env
+frontend/.env.local
+
+# Spring Boot
+backend/**/target/
+backend/**/.mvn/wrapper/maven-wrapper.jar
+
+# Java
+*.class
+
+# Maven
+.mvn/
+!**/.mvn/wrapper/maven-wrapper.properties
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# Environment
+**/.env
+**/.env.*
+
+# Coverage
+coverage/
+
+# Temporary
+*.tmp
+*.temp
+
+backend/backend/src/main/resources/application.yml
+backend/backend/output.txt

@@ -1,0 +1,38 @@
+spring:
+
+  datasource:
+
+    url: jdbc:postgresql://localhost:5433/aiplacementcopilot
+    username: postgres
+    password: YOUR_DB_PASSWORD
+
+    profiles:
+      active: dev
+
+  jpa:
+
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+jwt:
+  secret: YOUR_JWT_SECRET
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+cloudinary:
+  cloud-name: YOUR_CLOUD_NAME
+  api-key: YOUR_CLOUDINARY_API_KEY
+  api-secret: YOUR_CLOUDINARY_API_SECRET
+
+gemini:
+  api-key: YOUR_GEMINI_API_KEY
+  model: gemini-2.5-flash
