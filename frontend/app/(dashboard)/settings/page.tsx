@@ -4,7 +4,7 @@ export default function Page() {
 
     <h1 className="text-4xl font-bold">
 
-      Coding
+      Settings
 
     </h1>
 

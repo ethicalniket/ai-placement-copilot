@@ -8,7 +8,8 @@ import com.aiplacementcopilot.ai.prompt.ResumeAnalysisPromptBuilder;
 import lombok.RequiredArgsConstructor;
 import com.aiplacementcopilot.ai.parser.JsonResponseParser;
 import org.springframework.stereotype.Service;
-
+import com.aiplacementcopilot.resume.analysis.ResumeAnalysisMapper;
+import com.aiplacementcopilot.resume.analysis.ResumeAnalysisAiResponse;
 @Service
 @RequiredArgsConstructor
 public class ResumeAnalysisServiceImpl
@@ -17,6 +18,7 @@ public class ResumeAnalysisServiceImpl
     private final ResumeTextService resumeTextService;
     private final GeminiService geminiService;
     private final ResumeAnalysisPromptBuilder resumeAnalysisPromptBuilder;
+    private final ResumeAnalysisMapper resumeAnalysisMapper;
     private final JsonResponseParser jsonResponseParser;
     @Override
     public ResumeAnalysisResponse analyzeResume(
@@ -52,10 +54,17 @@ Never use ```.
 
                 );
 
-        return jsonResponseParser.parse(
-                aiResponse.getContent(),
-                ResumeAnalysisResponse.class
-        );
+        ResumeAnalysisAiResponse raw =
+
+                jsonResponseParser.parse(
+
+                        aiResponse.getContent(),
+
+                        ResumeAnalysisAiResponse.class
+
+                );
+
+        return resumeAnalysisMapper.map(raw);
     }
 
 }

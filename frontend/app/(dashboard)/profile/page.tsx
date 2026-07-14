@@ -2,11 +2,9 @@ export default function Page() {
 
   return (
 
-    <h1 className="text-4xl font-bold">
-
-      Profile
-
-    </h1>
+    <div className="bg-red-500 text-white p-10 text-4xl">
+      Tailwind Test
+    </div>
 
   );
 

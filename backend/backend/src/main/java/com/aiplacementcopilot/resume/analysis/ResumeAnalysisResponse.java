@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,12 +19,12 @@ public class ResumeAnalysisResponse {
 
     private String summary;
 
-    private String strengths;
+    private List<String> strengths;
 
-    private String weaknesses;
+    private List<String> weaknesses;
 
-    private String missingSkills;
+    private List<String> missingSkills;
 
-    private String improvementSuggestions;
+    private List<String> improvementSuggestions;
 
 }

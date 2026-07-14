@@ -5,7 +5,13 @@ import com.aiplacementcopilot.cloudinary.CloudinaryUploadResult;
 import com.aiplacementcopilot.resume.dto.ResumeResponse;
 import com.aiplacementcopilot.user.User;
 import com.aiplacementcopilot.user.UserRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
+import java.net.URL;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -146,6 +152,55 @@ public class ResumeServiceImpl implements ResumeService {
 
             throw new RuntimeException(
                     "Only PDF files are allowed."
+            );
+
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<Resource> viewResume(
+            String email
+    ) {
+
+        User user = userRepository
+
+                .findByEmail(email)
+
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        Resume resume = resumeRepository
+
+                .findByUser(user)
+
+                .orElseThrow(() ->
+                        new RuntimeException("Resume not found"));
+
+        try {
+
+            Resource resource = new UrlResource(
+                    new URL(resume.getResumeUrl())
+            );
+
+            return ResponseEntity.ok()
+
+                    .contentType(MediaType.APPLICATION_PDF)
+
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\""
+                                    + resume.getOriginalFileName()
+                                    + "\""
+                    )
+
+                    .body(resource);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Unable to load resume.",
+                    e
             );
 
         }

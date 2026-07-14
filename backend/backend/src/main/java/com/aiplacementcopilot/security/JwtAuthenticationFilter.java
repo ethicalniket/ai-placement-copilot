@@ -4,7 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,41 +43,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = header.substring(7);
 
-        String email = jwtService.extractUsername(token);
+        try {
 
-        if (email != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+            String email = jwtService.extractUsername(token);
 
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(email);
+            if (email != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (jwtService.isTokenValid(token, userDetails.getUsername())) {
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(email);
 
-                UsernamePasswordAuthenticationToken authentication =
+                if (jwtService.isTokenValid(token, userDetails.getUsername())) {
 
-                        new UsernamePasswordAuthenticationToken(
+                    UsernamePasswordAuthenticationToken authentication =
 
-                                userDetails,
+                            new UsernamePasswordAuthenticationToken(
 
-                                null,
+                                    userDetails,
 
-                                userDetails.getAuthorities()
+                                    null,
 
-                        );
+                                    userDetails.getAuthorities()
 
-                authentication.setDetails(
+                            );
 
-                        new WebAuthenticationDetailsSource()
+                    authentication.setDetails(
 
-                                .buildDetails(request)
+                            new WebAuthenticationDetailsSource()
 
-                );
+                                    .buildDetails(request)
 
-                SecurityContextHolder.getContext()
+                    );
 
-                        .setAuthentication(authentication);
+                    SecurityContextHolder.getContext()
+
+                            .setAuthentication(authentication);
+
+                }
 
             }
+
+        } catch (ExpiredJwtException ex) {
+
+            SecurityContextHolder.clearContext();
 
         }
 

@@ -11,27 +11,31 @@ export const api = axios.create({
 
   withCredentials: true,
 });
-
 api.interceptors.request.use(
-  (config) => {
-    if (
-      typeof window !==
-      "undefined"
-    ) {
-      const token =
-        localStorage.getItem(
-          "accessToken"
-        );
 
-      if (token) {
+  (config) => {
+
+    if (typeof window !== "undefined") {
+
+      const token =
+        localStorage.getItem("accessToken");
+
+      const isAuthRequest =
+        config.url?.startsWith("/auth");
+
+      if (token && !isAuthRequest) {
+
         config.headers.Authorization =
           `Bearer ${token}`;
+
       }
+
     }
 
     return config;
+
   },
 
-  (error) =>
-    Promise.reject(error)
+  (error) => Promise.reject(error)
+
 );

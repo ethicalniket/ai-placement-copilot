@@ -1,21 +1,24 @@
-import DashboardSidebar from "@/components/layout/dashboard-sidebar";
+import "./globals.css";
 
-export default function DashboardLayout({
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Placement Copilot",
+  description: "AI Powered Placement Preparation Platform",
+};
+
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <div className="flex min-h-screen">
-
-      <DashboardSidebar />
-
-      <main className="flex-1 p-8">
+    <html lang="en">
+      <body>
 
         {children}
 
-      </main>
-
-    </div>
+      </body>
+    </html>
   );
 }
