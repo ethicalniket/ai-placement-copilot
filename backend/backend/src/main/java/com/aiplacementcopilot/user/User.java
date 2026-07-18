@@ -99,4 +99,8 @@ public class User {
 
     @Column(length = 3000)
     private String bio;
+
+    private String resetPasswordToken;
+
+    private LocalDateTime resetPasswordTokenExpiry;
 }

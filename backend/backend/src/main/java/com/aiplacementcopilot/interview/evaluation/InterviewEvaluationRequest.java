@@ -27,4 +27,32 @@ public class InterviewEvaluationRequest {
     @Builder.Default
     private String difficulty = "MEDIUM";
 
+    @Builder.Default
+    private String interviewType = "RESUME";
+
+    @Builder.Default
+    private Integer questionNumber = 1;
+
+    @Builder.Default
+    private Integer totalQuestions = 15;
+
+    @Builder.Default
+    private Boolean lastQuestion = false;
+
+    private java.util.List<QuestionAnswer> interviewHistory;
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class QuestionAnswer {
+
+        @NotBlank
+        private String question;
+
+        @NotBlank
+        private String answer;
+
+    }
 }

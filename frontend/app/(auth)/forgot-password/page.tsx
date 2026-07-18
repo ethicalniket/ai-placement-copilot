@@ -1,13 +1,5 @@
+import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
+
 export default function ForgotPasswordPage() {
-
-  return (
-
-    <div>
-
-      Forgot Password
-
-    </div>
-
-  );
-
+  return <ForgotPasswordForm />;
 }

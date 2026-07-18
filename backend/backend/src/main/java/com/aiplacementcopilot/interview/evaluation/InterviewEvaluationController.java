@@ -46,5 +46,19 @@ public class InterviewEvaluationController {
         );
 
     }
+    @PostMapping("/final-report")
+    public ResponseEntity<InterviewEvaluationResponse.FinalInterviewReport> finalReport(
+            Authentication authentication,
+            @Valid @RequestBody InterviewEvaluationRequest request
+    ) {
+
+        InterviewEvaluationResponse.FinalInterviewReport response =
+                interviewEvaluationService.generateFinalReport(
+                        authentication.getName(),
+                        request
+                );
+
+        return ResponseEntity.ok(response);
+    }
 
 }

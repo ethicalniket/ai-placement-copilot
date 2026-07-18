@@ -5,14 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository
-        extends JpaRepository<User,String> {
+        extends JpaRepository<User, String> {
 
-    Optional<User>
+    Optional<User> findByEmail(String email);
 
-    findByEmail(String email);
+    boolean existsByEmail(String email);
 
-    boolean
-
-    existsByEmail(String email);
+    // Password Reset
+    Optional<User> findByResetPasswordToken(String token);
 
 }

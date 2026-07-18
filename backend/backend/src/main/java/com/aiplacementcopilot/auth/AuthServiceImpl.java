@@ -4,15 +4,15 @@ import com.aiplacementcopilot.common.Role;
 import com.aiplacementcopilot.security.JwtService;
 import com.aiplacementcopilot.user.User;
 import com.aiplacementcopilot.user.UserRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.UUID;
 
 @Service
@@ -29,14 +29,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final EmailService emailService;
+
     @Override
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
 
-            throw new RuntimeException(
-                    "Email already registered."
-            );
+            throw new RuntimeException("Email already registered.");
 
         }
 
@@ -139,6 +139,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository
 
                 .findAllByUser(user)
+
                 .forEach(token -> {
 
                     token.setRevoked(true);
@@ -192,6 +193,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
     }
+
     @Override
     public void logout(String token) {
 
@@ -202,15 +204,21 @@ public class AuthServiceImpl implements AuthService {
                         .findByToken(token)
 
                         .orElseThrow(() ->
+
                                 new RuntimeException(
+
                                         "Invalid Refresh Token"
-                                ));
+
+                                )
+
+                        );
 
         refreshToken.setRevoked(true);
 
         refreshTokenRepository.save(refreshToken);
 
     }
+
     @Override
     public AuthResponse refreshToken(String token) {
 
@@ -293,6 +301,126 @@ public class AuthServiceImpl implements AuthService {
                 .message("Token Refreshed")
 
                 .build();
+
+    }
+
+    @Override
+    public void forgotPassword(ForgotPasswordRequest request) {
+
+        User user = userRepository
+
+                .findByEmail(request.getEmail())
+
+                .orElseThrow(() ->
+
+                        new RuntimeException(
+
+                                "User not found."
+
+                        )
+
+                );
+
+        String token = generateSecureToken();
+
+        user.setResetPasswordToken(token);
+
+        user.setResetPasswordTokenExpiry(
+
+                LocalDateTime.now()
+
+                        .plusMinutes(15)
+
+        );
+
+        user.setUpdatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(
+
+                user.getEmail(),
+
+                token
+
+        );
+
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+
+        User user = userRepository
+
+                .findByResetPasswordToken(
+
+                        request.getToken()
+
+                )
+
+                .orElseThrow(() ->
+
+                        new RuntimeException(
+
+                                "Invalid reset token."
+
+                        )
+
+                );
+
+        if (user.getResetPasswordTokenExpiry() == null ||
+
+                user.getResetPasswordTokenExpiry()
+
+                        .isBefore(LocalDateTime.now())) {
+
+            throw new RuntimeException(
+
+                    "Reset token expired."
+
+            );
+
+        }
+
+        user.setPassword(
+
+                passwordEncoder.encode(
+
+                        request.getNewPassword()
+
+                )
+
+        );
+
+        user.setResetPasswordToken(null);
+
+        user.setResetPasswordTokenExpiry(null);
+
+        user.setUpdatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+        userRepository.save(user);
+
+    }
+
+    private String generateSecureToken() {
+
+        byte[] bytes = new byte[32];
+
+        new SecureRandom().nextBytes(bytes);
+
+        return Base64.getUrlEncoder()
+
+                .withoutPadding()
+
+                .encodeToString(bytes);
 
     }
 

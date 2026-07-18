@@ -11,13 +11,26 @@ import java.util.List;
 @Builder
 public class ResumeBuilderResponse {
 
+    // ================= SUMMARY =================
+
     private String professionalSummary;
+
+    // AI generated complete resume text
+    private String generatedResume;
+
+    // ================= SKILLS =================
 
     private List<String> technicalSkills;
 
+    // ================= PROJECTS =================
+
     private List<Project> projects;
 
+    // ================= CERTIFICATIONS =================
+
     private List<String> certifications;
+
+    // ================= ACHIEVEMENTS =================
 
     private List<String> achievements;
 
@@ -31,6 +44,8 @@ public class ResumeBuilderResponse {
         private String title;
 
         private String description;
+
+        private String techStack;
 
     }
 

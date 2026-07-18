@@ -12,7 +12,7 @@ import com.aiplacementcopilot.resume.text.ResumeTextService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.StringUtils;
 @Service
 @RequiredArgsConstructor
 public class InterviewServiceImpl
@@ -36,12 +36,15 @@ public class InterviewServiceImpl
     ) {
 
         String resumeText =
+                resumeTextService.getResumeText(email);
 
-                resumeTextService.getResumeText(
+        if (!StringUtils.hasText(resumeText)) {
 
-                        email
+            throw new IllegalStateException(
+                    "No resume found. Please upload a resume before starting an interview."
+            );
 
-                );
+        }
 
         AiResponse aiResponse =
 
@@ -50,14 +53,19 @@ public class InterviewServiceImpl
                         AiRequest.builder()
 
                                 .systemPrompt("""
-You are an expert AI Technical Interviewer.
+You are a Senior Technical Interviewer.
 
-Return ONLY valid JSON.
+Always return ONLY valid JSON.
 
-Never use markdown.
+Never return markdown.
 
 Never use ```.
 
+Never hallucinate.
+
+Never invent resume details.
+
+Generate interview questions only from the candidate's resume and the supplied job description.
 """)
 
                                 .userPrompt(
@@ -80,13 +88,30 @@ Never use ```.
 
                 );
 
-        return jsonResponseParser.parse(
+        if (aiResponse == null ||
+                !StringUtils.hasText(aiResponse.getContent())) {
 
-                aiResponse.getContent(),
+            throw new IllegalStateException(
+                    "AI failed to generate interview questions."
+            );
 
-                InterviewResponse.class
+        }
 
-        );
+        InterviewResponse response =
+                jsonResponseParser.parse(
+                        aiResponse.getContent(),
+                        InterviewResponse.class
+                );
+
+        if (response == null) {
+
+            throw new IllegalStateException(
+                    "Unable to parse AI interview response."
+            );
+
+        }
+
+        return response;
 
     }
 

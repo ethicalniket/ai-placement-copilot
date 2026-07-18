@@ -12,5 +12,9 @@ public interface InterviewEvaluationService {
             InterviewEvaluationRequest request
 
     );
+    InterviewEvaluationResponse.FinalInterviewReport generateFinalReport(
+            String email,
+            InterviewEvaluationRequest request
+    );
 
 }

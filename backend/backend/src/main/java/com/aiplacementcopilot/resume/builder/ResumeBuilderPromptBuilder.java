@@ -5,49 +5,93 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResumeBuilderPromptBuilder {
 
-    public String build(
-            ResumeBuilderRequest request
-    ) {
+    public String build(ResumeBuilderRequest request) {
 
         return """
-You are an Expert ATS Resume Writer.
+You are a Professional ATS Resume Writer.
 
-Generate an ATS optimized resume.
+Your job is NOT to invent information.
 
-Return ONLY valid JSON.
+You ONLY improve formatting, grammar and ATS optimization.
 
-Never use markdown.
+=============================
+STRICT RULES
+=============================
 
-Never use ```.
+1. NEVER add any new skill.
 
-JSON Format:
+2. NEVER add any project.
+
+3. NEVER add any experience.
+
+4. NEVER add any certification.
+
+5. NEVER add any achievement.
+
+6. NEVER add technologies that are not provided.
+
+7. NEVER assume anything.
+
+8. If information is missing, leave it empty.
+
+9. Rewrite professionally.
+
+10. Make resume ATS friendly.
+
+11. Keep facts exactly same.
+
+12. Return ONLY JSON.
+
+13. Never use markdown.
+
+14. Never use ```.
+
+=============================
+Return ONLY valid JSON in exactly this format.
 
 {
-  "professionalSummary":"",
 
-  "technicalSkills":[
-    ""
-  ],
+"professionalSummary":"",
 
-  "projects":[
-    {
-      "title":"",
-      "description":""
-    }
-  ],
+"generatedResume":"",
 
-  "certifications":[
-    ""
-  ],
+"technicalSkills":[
 
-  "achievements":[
-    ""
-  ]
+""
+
+],
+
+"projects":[
+
+{
+
+"title":"",
+
+"description":"",
+
+"techStack":""
+
 }
 
-Candidate Details
+],
 
-Full Name:
+"certifications":[
+
+""
+
+],
+
+"achievements":[
+
+""
+
+]
+
+}
+=============================
+Candidate Information
+
+Name:
 %s
 
 Email:
@@ -56,8 +100,8 @@ Email:
 Phone:
 %s
 
-Address:
-%s
+Location:
+%s, %s, %s
 
 LinkedIn:
 %s
@@ -74,22 +118,28 @@ Leetcode:
 Codeforces:
 %s
 
-College:
+Education:
 %s
 
-Degree:
+Programming Languages:
 %s
 
-Branch:
+Frameworks:
 %s
 
-Graduation Year:
+Databases:
 %s
 
-CGPA:
+Cloud:
 %s
 
-Skills:
+DevOps:
+%s
+
+AI Tools:
+%s
+
+Soft Skills:
 %s
 
 Projects:
@@ -104,27 +154,38 @@ Certifications:
 Achievements:
 %s
 
-Rules:
+Languages:
+%s
 
-1. Professional Summary should contain 4-5 lines.
+IMPORTANT
 
-2. Technical Skills should be returned as JSON array.
+Never generate anything that is not present above.
 
-3. Projects should be returned as JSON array.
+Only rewrite professionally.
 
-4. Certifications should be JSON array.
+The field "generatedResume" must contain a complete ATS-friendly resume as plain text.
 
-5. Achievements should be JSON array.
+The generated resume must contain these sections in order:
 
-6. Improve grammar.
+Name
 
-7. Rewrite projects professionally.
+Contact
 
-8. Use ATS friendly wording.
+Professional Summary
 
-9. Never return plain text resume.
+Technical Skills
 
-10. Return ONLY JSON.
+Projects
+
+Education
+
+Experience
+
+Certifications
+
+Achievements
+
+Return ONLY valid JSON.
 
 """
                 .formatted(
@@ -132,22 +193,36 @@ Rules:
                         request.getFullName(),
                         request.getEmail(),
                         request.getPhone(),
-                        request.getAddress(),
+
+                        request.getCity(),
+                        request.getState(),
+                        request.getCountry(),
+
                         request.getLinkedIn(),
                         request.getGithub(),
                         request.getPortfolio(),
                         request.getLeetcode(),
                         request.getCodeforces(),
-                        request.getCollege(),
-                        request.getDegree(),
-                        request.getBranch(),
-                        request.getGraduationYear(),
-                        request.getCgpa(),
-                        request.getSkills(),
+
+                        request.getEducation(),
+
+                        request.getProgrammingLanguages(),
+                        request.getFrameworks(),
+                        request.getDatabases(),
+                        request.getCloud(),
+                        request.getDevOps(),
+                        request.getAiTools(),
+                        request.getSoftSkills(),
+
                         request.getProjects(),
-                        request.getExperience(),
+
+                        request.getExperiences(),
+
                         request.getCertifications(),
-                        request.getAchievements()
+
+                        request.getAchievements(),
+
+                        request.getLanguages()
 
                 );
 

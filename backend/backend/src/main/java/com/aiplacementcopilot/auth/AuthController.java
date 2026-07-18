@@ -1,9 +1,7 @@
 package com.aiplacementcopilot.auth;
 
 import jakarta.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,6 +40,7 @@ public class AuthController {
         return authService.login(request);
 
     }
+
     @PostMapping("/refresh")
     public AuthResponse refresh(
 
@@ -52,6 +51,7 @@ public class AuthController {
         return authService.refreshToken(token);
 
     }
+
     @PostMapping("/logout")
     public void logout(
 
@@ -60,6 +60,40 @@ public class AuthController {
     ) {
 
         authService.logout(token);
+
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(
+
+            @Valid
+
+            @RequestBody
+
+            ForgotPasswordRequest request
+
+    ) {
+
+        authService.forgotPassword(request);
+
+        return "Password reset link sent successfully.";
+
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(
+
+            @Valid
+
+            @RequestBody
+
+            ResetPasswordRequest request
+
+    ) {
+
+        authService.resetPassword(request);
+
+        return "Password reset successfully.";
 
     }
 

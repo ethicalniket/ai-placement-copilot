@@ -8,7 +8,7 @@ import com.aiplacementcopilot.ai.prompt.InterviewEvaluationPromptBuilder;
 import com.aiplacementcopilot.interview.evaluation.dto.InterviewEvaluationRequest;
 import com.aiplacementcopilot.interview.evaluation.dto.InterviewEvaluationResponse;
 import com.aiplacementcopilot.resume.text.ResumeTextService;
-
+import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -36,12 +36,15 @@ public class InterviewEvaluationServiceImpl
     ) {
 
         String resumeText =
+                resumeTextService.getResumeText(email);
 
-                resumeTextService.getResumeText(
+        if (!StringUtils.hasText(resumeText)) {
 
-                        email
+            throw new IllegalStateException(
+                    "Resume not found."
+            );
 
-                );
+        }
 
         String prompt =
 
@@ -66,17 +69,29 @@ public class InterviewEvaluationServiceImpl
                         AiRequest.builder()
 
                                 .systemPrompt("""
+You are a Senior Technical Interview Evaluator.
 
-You are an expert AI Interview Evaluator.
+Evaluate the candidate fairly.
+
+Never hallucinate.
+
+Never invent resume details.
+
+Always consider:
+
+- Technical Accuracy
+- Communication
+- Problem Solving
+- Confidence
+- Best Practices
 
 Return ONLY valid JSON.
 
-Never use markdown.
+Never return markdown.
 
 Never use ```.
 
-Follow the required JSON schema exactly.
-
+Follow the schema exactly.
 """)
 
                                 .userPrompt(
@@ -89,14 +104,152 @@ Follow the required JSON schema exactly.
 
                 );
 
-        return jsonResponseParser.parse(
+        if (aiResponse == null ||
+                !StringUtils.hasText(aiResponse.getContent())) {
 
-                aiResponse.getContent(),
+            throw new IllegalStateException(
+                    "AI evaluation failed."
+            );
 
-                InterviewEvaluationResponse.class
+        }
+
+        InterviewEvaluationResponse response =
+                jsonResponseParser.parse(
+                        aiResponse.getContent(),
+                        InterviewEvaluationResponse.class
+                );
+
+        if (response == null) {
+
+            throw new IllegalStateException(
+                    "Unable to parse AI evaluation."
+            );
+
+        }
+
+        return response;
+
+    }
+    @Override
+    public InterviewEvaluationResponse.FinalInterviewReport generateFinalReport(
+
+            String email,
+
+            InterviewEvaluationRequest request
+
+    ) {
+
+        StringBuilder reportPrompt = new StringBuilder();
+
+        reportPrompt.append("""
+Generate the FINAL interview report.
+
+Analyze the complete interview.
+
+Return ONLY JSON.
+
+Schema:
+
+{
+
+"overallInterviewScore":90,
+
+"technicalAverage":90,
+
+"communicationAverage":90,
+
+"confidenceAverage":90,
+
+"problemSolvingAverage":90,
+
+"grammarAverage":90,
+
+"hiringRecommendation":"Recommended",
+
+"overallStrengths":[
+"..."
+],
+
+"overallWeaknesses":[
+"..."
+],
+
+"nextSteps":[
+"..."
+],
+
+"finalFeedback":"..."
+
+}
+
+========================
+
+""");
+
+        int i = 1;
+
+        for (InterviewEvaluationRequest.QuestionAnswer qa
+                : request.getInterviewHistory()) {
+
+            reportPrompt.append("\nQuestion ")
+                    .append(i++)
+                    .append("\n");
+
+            reportPrompt.append("Question : ")
+                    .append(qa.getQuestion())
+                    .append("\n");
+
+            reportPrompt.append("Answer : ")
+                    .append(qa.getAnswer())
+                    .append("\n\n");
+        }
+
+        AiResponse reportAi = geminiService.generate(
+
+                AiRequest.builder()
+
+                        .systemPrompt("""
+You are a Senior FAANG Interviewer.
+
+Generate only the final interview report.
+
+Return ONLY JSON.
+""")
+
+                        .userPrompt(reportPrompt.toString())
+
+                        .build()
 
         );
 
-    }
+        if (reportAi == null ||
+                !StringUtils.hasText(reportAi.getContent())) {
 
+            throw new IllegalStateException(
+                    "Unable to generate final report."
+            );
+
+        }
+
+        InterviewEvaluationResponse.FinalInterviewReport report =
+
+                jsonResponseParser.parse(
+
+                        reportAi.getContent(),
+
+                        InterviewEvaluationResponse.FinalInterviewReport.class
+
+                );
+
+        if (report == null) {
+
+            throw new IllegalStateException(
+                    "Unable to parse final report."
+            );
+
+        }
+
+        return report;
+
+    }
 }

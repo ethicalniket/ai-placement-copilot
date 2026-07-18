@@ -1,39 +1,111 @@
-export interface ResumeBuilderRequest {
-  fullName: string;
-  email: string;
-  phone: string;
-  address: string;
-
-  linkedIn: string;
-  github: string;
-  portfolio: string;
-  leetcode: string;
-  codeforces: string;
+export interface Education {
 
   college: string;
+
   degree: string;
+
   branch: string;
-  graduationYear: string;
+
   cgpa: string;
 
-  skills: string;
+  startYear: string;
 
-  projects: string;
+  endYear: string;
 
-  experience: string;
-
-  certifications: string;
-
-  achievements: string;
 }
 
 export interface ResumeProject {
+
   title: string;
+
   description: string;
+
+  techStack: string;
+
+  github: string;
+
+  liveUrl: string;
+
 }
 
+export interface Experience {
+
+  company: string;
+
+  role: string;
+
+  duration: string;
+
+  description: string;
+
+}
+
+export interface Certification {
+
+  name: string;
+
+  issuer: string;
+
+  year: string;
+
+}
+
+export interface ResumeBuilderRequest {
+
+  fullName: string;
+
+  email: string;
+
+  phone: string;
+
+  city: string;
+
+  state: string;
+
+  country: string;
+
+  linkedIn: string;
+
+  github: string;
+
+  portfolio: string;
+
+  leetcode: string;
+
+  codeforces: string;
+
+  education: Education[];
+
+  programmingLanguages: string[];
+
+  frameworks: string[];
+
+  databases: string[];
+
+  cloud: string[];
+
+  devOps: string[];
+
+  aiTools: string[];
+
+  softSkills: string[];
+
+  projects: ResumeProject[];
+
+  experiences: Experience[];
+
+  certifications: Certification[];
+
+  achievements: string[];
+
+  languages: string[];
+
+}
 export interface ResumeBuilderResponse {
+
   professionalSummary: string;
+
+  generatedResume: string;
 
   technicalSkills: string[];
 
@@ -42,4 +114,5 @@ export interface ResumeBuilderResponse {
   certifications: string[];
 
   achievements: string[];
+
 }

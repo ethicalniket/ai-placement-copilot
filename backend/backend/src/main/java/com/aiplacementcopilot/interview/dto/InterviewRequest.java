@@ -4,11 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -17,15 +13,25 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InterviewRequest {
 
-    @NotBlank
+    @NotBlank(message = "Job description is required.")
     private String jobDescription;
 
     @Builder.Default
     private String difficulty = "MEDIUM";
 
-    @Min(5)
-    @Max(30)
+    @Builder.Default
+    private String interviewType = "RESUME";
+
+    @Builder.Default
+    private String language = "English";
+
     @Builder.Default
     private Integer numberOfQuestions = 15;
+
+    @Min(1)
+    @Max(30)
+    public Integer getNumberOfQuestions() {
+        return numberOfQuestions;
+    }
 
 }

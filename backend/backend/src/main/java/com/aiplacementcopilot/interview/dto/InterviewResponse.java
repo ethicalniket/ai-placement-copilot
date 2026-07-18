@@ -15,6 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 public class InterviewResponse {
 
+    private String interviewType;
+
+    private String difficulty;
+
+    private Integer estimatedDuration;
+
     private List<String> technicalQuestions;
 
     private List<String> hrQuestions;

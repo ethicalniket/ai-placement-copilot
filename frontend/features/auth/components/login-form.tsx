@@ -3,13 +3,29 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { Mail, Lock } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { loginSchema, LoginSchema } from "../schemas/login-schema";
+import { toast } from "sonner";
+
+import {
+  loginSchema,
+  LoginSchema,
+} from "../schemas/login-schema";
+
 import { login } from "../api/login";
 
-import { Button } from "@/components/ui/button";
+import {
+  AuthInput,
+  AuthButton,
+  AuthDivider,
+  SocialLoginButton,
+  RememberMe,
+  ForgotPasswordLink,
+  AuthFooter,
+} from "./AuthForm";
 
 import {
   Card,
@@ -19,13 +35,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
 export default function LoginForm() {
+
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
+
+  const [rememberMe, setRememberMe] =
+    useState(false);
 
   const {
     register,
@@ -35,11 +53,16 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  async function onSubmit(data: LoginSchema) {
+  async function onSubmit(
+    data: LoginSchema
+  ) {
+
     try {
+
       setLoading(true);
 
-      const response = await login(data);
+      const response =
+        await login(data);
 
       localStorage.setItem(
         "accessToken",
@@ -51,89 +74,139 @@ export default function LoginForm() {
         response.refreshToken
       );
 
-      router.push("/dashboard");
-    } catch (error: any) {
-      alert(
-        error?.response?.data?.message ??
-          "Invalid email or password."
+      if (rememberMe) {
+
+        localStorage.setItem(
+          "rememberMe",
+          "true"
+        );
+
+      }
+
+      toast.success(
+        "Welcome back!"
       );
+
+      router.replace("/dashboard");
+
+    } catch (error: any) {
+
+      toast.error(
+
+        error?.response?.data?.message ??
+
+        "Invalid email or password."
+
+      );
+
     } finally {
+
       setLoading(false);
+
     }
+
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="text-3xl">
-          Login
+
+    <Card
+      className="
+        rounded-[28px]
+        border
+        border-white/60
+        bg-white/75
+        backdrop-blur-2xl
+        shadow-[0_30px_80px_rgba(15,23,42,.15)]
+      "
+    >
+
+      <CardHeader className="space-y-3">
+
+        <CardTitle
+          className="
+            text-4xl
+            font-bold
+            tracking-tight
+          "
+        >
+
+          Welcome Back 👋
+
         </CardTitle>
 
-        <CardDescription>
-          Welcome back to AI Placement Copilot
+        <CardDescription
+          className="text-base"
+        >
+
+          Continue your placement journey.
+
         </CardDescription>
+
       </CardHeader>
 
       <CardContent>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5"
+          className="space-y-6"
         >
-          <div className="space-y-2">
-            <Label htmlFor="email">
-              Email
-            </Label>
 
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              {...register("email")}
+          <AuthInput
+            label="Email"
+            placeholder="Enter your email"
+            type="email"
+            icon={<Mail size={18} />}
+            registration={register("email")}
+            error={errors.email?.message}
+          />
+
+          <AuthInput
+            label="Password"
+            placeholder="Enter your password"
+            type="password"
+            icon={<Lock size={18} />}
+            registration={register("password")}
+            error={errors.password?.message}
+          />
+
+          <div className="flex items-center justify-between">
+
+            <RememberMe
+              checked={rememberMe}
+              onCheckedChange={setRememberMe}
             />
 
-            {errors.email && (
-              <p className="text-sm text-red-500">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">
-              Password
-            </Label>
-
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              {...register("password")}
+            <ForgotPasswordLink
+              onClick={() =>
+                router.push("/forgot-password")
+              }
             />
 
-            {errors.password && (
-              <p className="text-sm text-red-500">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </Button>
+          <AuthButton
+            loading={loading}
+            text="Continue"
+            loadingText="Signing In..."
+          />
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-          >
-            Continue with Google
-          </Button>
+          <AuthDivider />
+
+          <SocialLoginButton />
+
+          <AuthFooter
+            text="Don't have an account?"
+            linkText="Create Account"
+            onClick={() =>
+              router.push("/register")
+            }
+          />
+
         </form>
+
       </CardContent>
+
     </Card>
+
   );
-}
+  }
