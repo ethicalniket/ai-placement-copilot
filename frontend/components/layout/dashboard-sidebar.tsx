@@ -37,6 +37,11 @@ const menus = [
     icon: MessageSquare,
   },
   {
+    title: "Career",
+    href: "/career",
+    icon: GraduationCap,
+  },
+  {
     title: "Profile",
     href: "/profile",
     icon: User,
@@ -99,7 +104,10 @@ export default function DashboardSidebar() {
             {menus.map((menu) => {
               const Icon = menu.icon;
 
-              const active = pathname === menu.href;
+              const active =
+                menu.href === "/career"
+                  ? pathname.startsWith("/career")
+                  : pathname === menu.href;
 
               return (
                 <Link
